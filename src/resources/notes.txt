@@ -1,0 +1,17 @@
+screen wall dimensions:
+w16
+h15
+
+wall dimensions:
+8x8 pixels
+
+screen scaled times 4 dimensions:
+w512
+h480
+
+scaled by 4 wall dimensions:
+32x32 pixels
+
+scaled player dimensions:
+w32
+h64
