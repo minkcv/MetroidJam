@@ -54,7 +54,7 @@ public class TitleMenu extends Interactive{
 	@Override
 	public void draw(Graphics g){
 		g.drawImage(title2Image, titleX, 0, null);
-		g.setColor(Color.WHITE);
+//		g.setColor(Color.white);
 //		g.setFont(new Font("Monospaced", Font.PLAIN, 24));
 //		g.drawString("Press Enter", Main.WIDTH / 2 - 90, 300);
 	}

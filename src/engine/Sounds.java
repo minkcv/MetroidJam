@@ -16,7 +16,7 @@ public class Sounds {
 	private static Audio footSteps;
 	private static boolean loopingFootSteps;
 	private static Audio enemyHit;
-
+	private static Audio playerHit;
 
 	public static void loadSounds(){
 		try {
@@ -28,6 +28,7 @@ public class Sounds {
 			enterMorphBall = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("resources/sounds/morph-ball-enter.wav"));
 			footSteps = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("resources/sounds/footstep_together.wav"));
 			enemyHit = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("resources/sounds/enemy_hit.wav"));
+			playerHit = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("resources/sounds/hurt.wav"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -59,6 +60,9 @@ public class Sounds {
 	}
 	public static void playEnemyHit(){
 		enemyHit.playAsSoundEffect(1.0f, 1.0f, false);
+	}
+	public static void playPlayerHit(){
+		playerHit.playAsSoundEffect(1.0f, 1.0f, false);
 	}
 	public static void playFootSteps(){
 		if(! loopingFootSteps){

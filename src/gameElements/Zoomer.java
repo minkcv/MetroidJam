@@ -25,7 +25,7 @@ public class Zoomer extends Enemy{
 	private Rectangle bottomRightRectangle;
 	
 	public Zoomer(int x, int y, int dir) {
-		super(x, y, 100, 4, 2, 2);
+		super(x, y, 100, 4, 2, 2, 8);
 		upDirection = dir;
 		moveSpeed = 1;
 		loadGraphics();

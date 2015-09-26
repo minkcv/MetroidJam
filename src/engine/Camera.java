@@ -7,6 +7,7 @@ import gameElements.MorphBallPowerUp;
 import gameElements.Player;
 import gameElements.Wall;
 
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Rectangle;
@@ -97,7 +98,8 @@ public class Camera {
 			if(b.getxPosition() - xShift < 0 || b.getxPosition() - xShift> Main.WIDTH || b.getyPosition() - yShift < 0 || b.getyPosition() - yShift > Main.HEIGHT)
 				b.setToRemove(true);
 		}
+		g.setColor(Color.white);
 		g.setFont(new Font("Monospaced", Font.PLAIN, 20));
-		g.drawString("EN", 20, 80);
+		g.drawString("EN " + player.getEnergy(), 20, 80);
 	}
 }

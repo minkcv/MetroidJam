@@ -16,18 +16,19 @@ public class Main {
 	private GameCanvas gCanvas;
 	private TitleMenu titleMenu;
 	private PauseMenu pauseMenu;
+	private GameOverMenu gameOverMenu;
 	private Interactive currentInteractive;
 	private GameState gState;
 	private enum GameState {
-		GAME, TITLE_MENU, PAUSE_MENU
+		GAME, TITLE_MENU, PAUSE_MENU, GAME_OVER
 	}
 	
 	public static void main(String[] args){ new Main(); }
 	private Main(){
 		Sounds.loadSounds();
-		game = new Game(this);
 		titleMenu = new TitleMenu(this);
 		pauseMenu = new PauseMenu(this);
+		gameOverMenu = new GameOverMenu(this);
 		gFrame= new GameFrame(WIDTH, HEIGHT, this, "MTRD");
 		gCanvas= new GameCanvas(this);
 		gFrame.add(gCanvas);
@@ -50,6 +51,8 @@ public class Main {
 			case PAUSE_MENU:
 				currentInteractive = pauseMenu;
 				break;
+			case GAME_OVER:
+				currentInteractive = gameOverMenu;
 			}
 			try{
 				Thread.sleep(20);
@@ -66,6 +69,7 @@ public class Main {
 	}
 	
 	public void startGame(){
+		game = new Game(this);
 		gState = GameState.GAME;
 	}
 	
@@ -75,6 +79,9 @@ public class Main {
 	
 	public void unPauseGame(){
 		gState = GameState.GAME;
+	}
+	public void gameOver(){
+		gState = GameState.GAME_OVER;
 	}
 
 	public void focusGained(FocusEvent e) {

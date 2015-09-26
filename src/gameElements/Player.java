@@ -17,6 +17,14 @@ public class Player extends Sprite{
 
 	private int xVelocity;
 	private int yVelocity;
+	private int knockbackX;
+	private int knockbackY;
+	private int knockbackSpeed;
+	private double invulnerableTime = 2000;
+	private double invulnerableStartTime;
+	private boolean invulnerable;
+	private int energy;
+	private final int startEnergy = 30;
 	private int xMoveSpeed;
 	private int jumpSpeed;
 	private int fallFactor; // lower value falls faster
@@ -66,7 +74,7 @@ public class Player extends Sprite{
 		gun = new Sprite(0, 0, 0, 1, 2);
 		loadGraphics();
 		
-		
+		energy = startEnergy;
 		facingDirection = 0;
 		zReleased = true;
 		spinJumpHeight = stepHeight / 2;
@@ -82,6 +90,7 @@ public class Player extends Sprite{
 		xVelocity = 0;
 		yVelocity = 0;
 		xMoveSpeed = 4;
+		knockbackSpeed = 14;
 		
 		walkBounds = new Rectangle(xPosition, yPosition, stepWidth, stepHeight);
 		spinJumpBounds = new Rectangle(xPosition, yPosition, stepWidth, stepHeight / 2);
@@ -101,8 +110,42 @@ public class Player extends Sprite{
 	}
 
 	public void update(Level currentLevel){
-
-		currentStage = 0;
+		knockbackX = 0;
+		knockbackY = 0;
+		
+		if(invulnerableStartTime + invulnerableTime < System.currentTimeMillis()){
+			invulnerable = false;
+			flashing = false;
+		}
+		else{
+			//invulnerable = true;
+		}
+		
+		if(invulnerable){
+			flashing = true;
+		}
+		
+		for(Enemy e : currentLevel.getEnemies()){
+			if(this.bounding.intersects(e.bounding) && ! invulnerable){
+				invulnerable = true;
+				invulnerableStartTime = System.currentTimeMillis();
+				Sounds.playPlayerHit();
+				energy -= e.getDamage();
+				if(this.xPosition < e.xPosition){
+					knockbackX = -knockbackSpeed;
+				}
+				else if(this.xPosition > e.xPosition){
+					knockbackX = knockbackSpeed;
+				}
+				if(this.yPosition < e.yPosition){
+					knockbackY = -knockbackSpeed;
+				}
+				else if(this.yPosition > e.yPosition){
+					knockbackY = knockbackSpeed;
+				}
+			}
+		}
+		
 		collisionDetection(currentLevel);
 		
 		if(xVelocity != 0 && touchingGround && !inMorphBall){
@@ -146,13 +189,12 @@ public class Player extends Sprite{
 
 	public void collisionDetection(Level currentLevel){
 		ArrayList<Wall> walls = currentLevel.getWalls();
-		ArrayList<Enemy> enemies = currentLevel.getEnemies();
 		
 		walkBounds = new Rectangle(xPosition, yPosition, stepWidth, stepHeight);
 		spinJumpBounds = new Rectangle(xPosition, yPosition, stepWidth, stepHeight / 2);
 		ballBounds = new Rectangle(xPosition, yPosition + stepHeight / 2, stepWidth, stepHeight / 2);
 
-		//horizontal move
+		//horizontal move, gets overridden by knock back
 		if(Keyboard.RIGHT){
 			xVelocity = xMoveSpeed;
 		}
@@ -225,6 +267,13 @@ public class Player extends Sprite{
 		else{
 //			stepHeight = normalHeight;
 			hitBox = walkBounds;
+		}
+		
+		if(knockbackX != 0){
+			xVelocity = knockbackX;
+		}
+		if(knockbackY != 0){
+			yVelocity = knockbackY;
 		}
 
 		//update rectangles
@@ -342,7 +391,7 @@ public class Player extends Sprite{
 	}// end collision detection
 
 	public void animate(){
-
+		currentStage = 0;
 		//face left or right
 		if(xVelocity < 0){
 			facingDirection = -1;
@@ -445,5 +494,8 @@ public class Player extends Sprite{
 	}
 	public boolean isGunVisible(){
 		return gunVisible;
+	}
+	public int getEnergy(){
+		return energy;
 	}
 }

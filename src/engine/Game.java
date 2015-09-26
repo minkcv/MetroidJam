@@ -96,6 +96,10 @@ public class Game extends Interactive{
 			player.update(currentLevel);
 			currentLevel.update();
 		}
+		
+		if(player.getEnergy() < 1){
+			main.gameOver();
+		}
 	}
 
 	@Override
