@@ -28,7 +28,7 @@ public class Game extends Interactive{
 	}
 	
 	public void initialize(){
-		levelNumber = 1;
+		levelNumber = 3;
 		player = new Player();
 		player.setFlashing(true);
 		loadLevel(levelNumber);
@@ -51,17 +51,29 @@ public class Game extends Interactive{
 			for(int i = 0; i < mapImg.getWidth(); i++){
 				for(int j = 0; j < mapImg.getHeight(); j++){
 					Color c = new Color(mapImg.getRGB(i, j));					
-					if(c.getBlue() == 0 && c.getRed() == 0 && c.getGreen() == 255){ //green
+					if(c.getBlue() == 0 && c.getRed() == 0 && c.getGreen() == 255){ //green - player
 						player.setPosition(i * tempWall.getStepWidth(), j * tempWall.getStepHeight());
 					}
-					if(c.getBlue() == 0 && c.getRed() == 0 && c.getGreen() == 0){ //black				
+					if(c.getBlue() == 0 && c.getRed() == 0 && c.getGreen() == 0){ //black - wall		
 						currentLevel.addWall(new Wall(i * tempWall.getStepWidth(), j * tempWall.getStepHeight()));
 					}
-					if(c.getBlue() == 255 && c.getRed() == 0 && c.getGreen() == 0){
+					if(c.getBlue() == 255 && c.getRed() == 0 && c.getGreen() == 0){ //blue - morph ball
 						currentLevel.setMorphBall(new MorphBallPowerUp(i * tempWall.getStepWidth(), j * tempWall.getStepHeight()));
 					}
-					if(c.getBlue() == 0 && c.getRed() == 255 && c.getGreen() < 4){
+					if(c.getBlue() == 255 && c.getRed() == 0 && c.getGreen() == 1){ //blue - missiles
+						currentLevel.addMissilePowerUp(new MissilePowerUp(i * tempWall.getStepWidth(), j * tempWall.getStepHeight()));
+					}
+					if(c.getBlue() == 255 && c.getRed() == 0 && c.getGreen() == 2){ //blue - energy tank
+						currentLevel.addEnergyTank(new EnergyTankPowerUp(i * tempWall.getStepWidth(), j * tempWall.getStepHeight()));
+					}
+					if(c.getBlue() == 128 && c.getRed() == 255 && c.getGreen() == 128){ //salmon - lava
+						currentLevel.addLava(new Lava(i * tempWall.getStepWidth(), j * tempWall.getStepHeight()));
+					}
+					if(c.getBlue() == 0 && c.getRed() == 255 && c.getGreen() < 4){ // red - zoomer, green = up direction
 						currentLevel.addEnemy(new Zoomer(i * tempWall.getStepWidth(), j * tempWall.getStepHeight(), c.getGreen()));
+					}
+					if(c.getBlue() == 1 && c.getRed() == 255 && c.getGreen() == 0){ // red - skree
+						currentLevel.addEnemy(new Skree(i * tempWall.getStepWidth(), j * tempWall.getStepHeight()));
 					}
 				}
 			}
@@ -108,11 +120,19 @@ public class Game extends Interactive{
 	}
 	
 	public void collectItem(Sprite item){
+		Sounds.playObtainPowerUp();
+		try{
+			Thread.sleep(3000);
+		}catch(InterruptedException e){}
+		
 		if(item.getClass() == MorphBallPowerUp.class){
-			try{
-				Thread.sleep(3000);
-			}catch(InterruptedException e){}
 			player.setHasMorphBall(true);
+		}
+		else if(item.getClass() == MissilePowerUp.class){
+			player.obtainMissileExpansion();
+		}
+		else if(item.getClass() == EnergyTankPowerUp.class){
+			player.obtainEnergyTank();
 		}
 	}
 	

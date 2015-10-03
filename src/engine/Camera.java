@@ -2,7 +2,12 @@ package engine;
 
 import gameElements.Beam;
 import gameElements.Enemy;
+import gameElements.EnergyDrop;
+import gameElements.EnergyTankPowerUp;
 import gameElements.Level;
+import gameElements.Missile;
+import gameElements.MissileDrop;
+import gameElements.MissilePowerUp;
 import gameElements.MorphBallPowerUp;
 import gameElements.Player;
 import gameElements.Wall;
@@ -19,10 +24,12 @@ public class Camera {
 	private Level level;
 	private Rectangle cameraBounds;
 	private MorphBallPowerUp morphBall;
+	private HUD hud;
 	public Camera(Game game){
 		this.game = game;
 		player = game.getPlayer();
 		level = game.getCurrentLevel();
+		hud = new HUD(player);
 	}
 	public void draw(Graphics g){
 		morphBall = level.getMorphBall();
@@ -98,8 +105,21 @@ public class Camera {
 			if(b.getxPosition() - xShift < 0 || b.getxPosition() - xShift> Main.WIDTH || b.getyPosition() - yShift < 0 || b.getyPosition() - yShift > Main.HEIGHT)
 				b.setToRemove(true);
 		}
-		g.setColor(Color.white);
-		g.setFont(new Font("Monospaced", Font.PLAIN, 20));
-		g.drawString("EN " + player.getEnergy(), 20, 80);
+		for(MissilePowerUp m : level.getMissilePowerUps()){
+			m.drawAt(g, m.getxPosition() - xShift, m.getyPosition() - yShift);
+		}
+		for(Missile m : level.getMissiles()){
+			m.drawAt(g, m.getxPosition() - xShift, m.getyPosition() - yShift);
+		}
+		for(EnergyTankPowerUp e : level.getEnergyTanks()){
+			e.drawAt(g, e.getxPosition() - xShift, e.getyPosition() - yShift);
+		}
+		for(EnergyDrop e : level.getEnergyDrops()){
+			e.drawAt(g, e.getxPosition() - xShift, e.getyPosition() - yShift);
+		}
+		for(MissileDrop m : level.getMissileDrops()){
+			m.drawAt(g, m.getxPosition() - xShift, m.getyPosition() - yShift);
+		}
+		hud.draw(g);
 	}
 }

@@ -1,5 +1,6 @@
 package gameElements;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Rectangle;
@@ -56,6 +57,8 @@ public class Sprite {
 	
 	public void drawAt(Graphics g, int x, int y){
 		g.drawImage(stepImages[currentStage][currentStep], x, y, null);
+//		g.setColor(Color.magenta);
+//		g.drawRect(x, y, stepWidth, stepHeight);
 	}
 	
 	public int getStepWidth() {

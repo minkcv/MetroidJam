@@ -25,7 +25,7 @@ public class Zoomer extends Enemy{
 	private Rectangle bottomRightRectangle;
 	
 	public Zoomer(int x, int y, int dir) {
-		super(x, y, 100, 4, 2, 2, 8);
+		super(x, y, 100, 4, 2, 3, 8);
 		upDirection = dir;
 		moveSpeed = 1;
 		loadGraphics();
@@ -39,10 +39,7 @@ public class Zoomer extends Enemy{
 			e.printStackTrace();
 		}
 	}
-	public void update(ArrayList<Wall> walls){
-		if(health < 1){
-			toRemove = true;
-		}
+	public void update(Player player, ArrayList<Wall> walls){
 		bounding = new Rectangle(xPosition, yPosition, stepWidth, stepHeight);
 		boolean topCollides = false;
 		boolean topLeftCollides = false;

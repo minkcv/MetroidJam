@@ -16,7 +16,10 @@ public class Sounds {
 	private static Audio footSteps;
 	private static boolean loopingFootSteps;
 	private static Audio enemyHit;
+	private static Audio enemyDie;
 	private static Audio playerHit;
+	private static Audio inLava;
+	private static Audio smallPickup;
 
 	public static void loadSounds(){
 		try {
@@ -28,7 +31,10 @@ public class Sounds {
 			enterMorphBall = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("resources/sounds/morph-ball-enter.wav"));
 			footSteps = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("resources/sounds/footstep_together.wav"));
 			enemyHit = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("resources/sounds/enemy_hit.wav"));
+			enemyDie = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("resources/sounds/enemy_die.wav"));
 			playerHit = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("resources/sounds/hurt.wav"));
+			inLava = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("resources/sounds/lava.wav"));
+			smallPickup = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("resources/sounds/hp-pickup.wav"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -61,8 +67,17 @@ public class Sounds {
 	public static void playEnemyHit(){
 		enemyHit.playAsSoundEffect(1.0f, 1.0f, false);
 	}
+	public static void playEnemyDie(){
+		enemyDie.playAsSoundEffect(1.0f, 1.0f, false);
+	}
 	public static void playPlayerHit(){
 		playerHit.playAsSoundEffect(1.0f, 1.0f, false);
+	}
+	public static void playInLava(){
+		inLava.playAsSoundEffect(1.0f, 1.0f, false);
+	}
+	public static void playSmallPickup(){
+		smallPickup.playAsSoundEffect(1.0f, 1.0f, false);
 	}
 	public static void playFootSteps(){
 		if(! loopingFootSteps){

@@ -25,6 +25,7 @@ public class Player extends Sprite{
 	private boolean invulnerable;
 	private int energy;
 	private final int startEnergy = 30;
+	private int energyCapacity;
 	private int xMoveSpeed;
 	private int jumpSpeed;
 	private int fallFactor; // lower value falls faster
@@ -40,7 +41,12 @@ public class Player extends Sprite{
 	private boolean gunVisible = true;
 	private boolean canShoot = true;
 	private int maxBeams;
+	private int maxMissiles; // on screen at one time
 	private boolean xReleased;
+	private boolean hasMissiles;
+	private int missileCapacity;
+	private int currentMissiles;
+	private boolean missileMode;
 	private Rectangle topRectangle;
 	private Rectangle topLeftRectangle;
 	private Rectangle topRightRectangle;
@@ -57,24 +63,28 @@ public class Player extends Sprite{
 	private Rectangle ballBounds;
 	private Rectangle hitBox; // for enemy collisions
 	
+	private int spinJumpHeight;
+	private int normalHeight;
+	private boolean hasMorphBall;
+	private boolean inMorphBall;
+	private int morphBallHeight;
+	private long lavaDamageStartTime;
+	private long lavaDamageTime = 200;
+	private boolean shiftReleased;
 	private enum JumpState{
 		ON_GROUND,
 		SPIN_JUMP,
 		NORMAL_JUMP
 	}
 	private JumpState jumpState;
-	private int spinJumpHeight;
-	private int normalHeight;
-	private boolean hasMorphBall;
-	private boolean inMorphBall;
-	private int morphBallHeight;
 
 	public Player(){
 		super(0, 0, 100, 3, 4);
-		gun = new Sprite(0, 0, 0, 1, 2);
+		gun = new Sprite(0, 0, 0, 2, 2);
 		loadGraphics();
 		
 		energy = startEnergy;
+		energyCapacity = 99;
 		facingDirection = 0;
 		zReleased = true;
 		spinJumpHeight = stepHeight / 2;
@@ -87,10 +97,12 @@ public class Player extends Sprite{
 		fallFactor = 145;
 		
 		maxBeams = 3;
+		maxMissiles = 3;
+		
 		xVelocity = 0;
 		yVelocity = 0;
 		xMoveSpeed = 4;
-		knockbackSpeed = 14;
+		knockbackSpeed = xMoveSpeed * 4;
 		
 		walkBounds = new Rectangle(xPosition, yPosition, stepWidth, stepHeight);
 		spinJumpBounds = new Rectangle(xPosition, yPosition, stepWidth, stepHeight / 2);
@@ -113,16 +125,41 @@ public class Player extends Sprite{
 		knockbackX = 0;
 		knockbackY = 0;
 		
+		if(Keyboard.SHIFT){
+			if(currentMissiles > 0 && shiftReleased){
+				missileMode = ! missileMode;
+			}
+			shiftReleased = false;
+		}
+		else{
+			shiftReleased = true;
+		}
+		
+		if(currentMissiles < 1){
+			missileMode = false;
+		}
+		
 		if(invulnerableStartTime + invulnerableTime < System.currentTimeMillis()){
 			invulnerable = false;
 			flashing = false;
 		}
-		else{
-			//invulnerable = true;
-		}
 		
 		if(invulnerable){
 			flashing = true;
+		}
+		
+		boolean inLava = false;
+		for(Lava l : currentLevel.getLava()){
+			if(this.bounding.intersects(l.bounding)){
+				inLava = true;
+				Sounds.playInLava();
+			}
+		}
+		if(lavaDamageStartTime + lavaDamageTime < System.currentTimeMillis()){
+			if(inLava){
+				energy--;
+				lavaDamageStartTime = System.currentTimeMillis();
+			}
 		}
 		
 		for(Enemy e : currentLevel.getEnemies()){
@@ -157,12 +194,13 @@ public class Player extends Sprite{
 		
 		animate();
 		
-		if(currentLevel.getBeams().size() < maxBeams && !inMorphBall){
+		if(currentLevel.getBeams().size() < maxBeams && currentLevel.getMissiles().size() < maxMissiles && !inMorphBall){
 			canShoot = true;
 		}
 		else{
 			canShoot = false;
 		}
+		
 
 		if(Keyboard.X){
 			if(xReleased && canShoot){
@@ -173,7 +211,13 @@ public class Player extends Sprite{
 					dir = 1;
 				if(aimingUp)
 					dir = 0;
-				currentLevel.addBeam(new Beam(gun.getxPosition(), gun.getyPosition(), dir));
+				if(!missileMode){
+					currentLevel.addBeam(new Beam(gun.getxPosition(), gun.getyPosition(), dir));
+				}
+				else{
+					currentLevel.addMissile(new Missile(gun.getxPosition(), gun.getyPosition(), dir));
+					currentMissiles--;
+				}
 				if(jumpState == JumpState.SPIN_JUMP)
 					jumpState = JumpState.NORMAL_JUMP;
 				Sounds.playShoot();
@@ -184,6 +228,12 @@ public class Player extends Sprite{
 			xReleased = true;
 		}
 		
+		if(energy > energyCapacity){
+			energy = energyCapacity;
+		}
+		if(currentMissiles > missileCapacity){
+			currentMissiles = missileCapacity;
+		}
 	}
 
 
@@ -281,8 +331,8 @@ public class Player extends Sprite{
 		topRectangle = new Rectangle(xPosition, yPosition - Math.abs(yVelocity), stepWidth, Math.abs(yVelocity));
 		topLeftRectangle = new Rectangle(xPosition - Math.abs(xVelocity), yPosition - Math.abs(yVelocity), stepWidth, Math.abs(yVelocity));
 		topRightRectangle = new Rectangle(xPosition + stepWidth, yPosition - Math.abs(yVelocity), stepWidth, Math.abs(yVelocity));
-		rightRectangle = new Rectangle(xPosition + stepWidth, yPosition, Math.abs(xVelocity), stepHeight);
-		leftRectangle = new Rectangle(xPosition - Math.abs(xVelocity), yPosition, Math.abs(xVelocity), stepHeight);
+		rightRectangle = new Rectangle(xPosition + stepWidth, yPosition, Math.abs(xVelocity), stepHeight + yVelocity);
+		leftRectangle = new Rectangle(xPosition - Math.abs(xVelocity), yPosition, Math.abs(xVelocity), stepHeight + yVelocity);
 		bottomLeftRectangle = new Rectangle(xPosition - Math.abs(xVelocity), yPosition + stepHeight, Math.abs(xVelocity), Math.abs(yVelocity));
 		bottomRightRectangle = new Rectangle(xPosition + stepWidth, yPosition + stepHeight, Math.abs(xVelocity), Math.abs(yVelocity));
 		bottomRectangle = new Rectangle(xPosition, yPosition + stepHeight, stepWidth, Math.abs(yVelocity));
@@ -293,6 +343,8 @@ public class Player extends Sprite{
 
 		int partialFallDistance = Integer.MAX_VALUE;
 		int partialJumpDistance = Integer.MAX_VALUE;
+		
+		int partialXDistance = Integer.MAX_VALUE;
 
 		Rectangle gapRect = new Rectangle(0, 0);
 		boolean wallBelowGap = false;
@@ -352,11 +404,11 @@ public class Player extends Sprite{
 		}
 
 		//horizontal stopping
-		if(leftCollides && xVelocity < 0){
+		if(leftCollides && xVelocity < 0 && !(gapOpen && wallBelowGap && wallAboveGap)){
 			xVelocity = 0;
 		}
 
-		if(rightCollides && xVelocity > 0){
+		if(rightCollides && xVelocity > 0 && !(gapOpen && wallBelowGap && wallAboveGap)){
 			xVelocity = 0;			
 		}
 
@@ -407,6 +459,13 @@ public class Player extends Sprite{
 			aimingUp = false;
 		}
 		
+		if(missileMode){
+			gun.currentStage = 1;
+		}
+		else{
+			gun.currentStage = 0;
+		}
+		
 		if(aimingUp){
 			gun.setyPosition(this.yPosition - gun.stepHeight);
 			if(facingDirection < 0){
@@ -435,7 +494,7 @@ public class Player extends Sprite{
 		else
 			gunVisible = true;
 
-//		currentStage += facingDirection;
+		//currentStage += facingDirection; // when player can face left or right
 
 		//animate walking
 		if(touchingGround || jumpState == JumpState.SPIN_JUMP){
@@ -474,7 +533,6 @@ public class Player extends Sprite{
 			}
 			else{
 				g.drawImage(stepImages[currentStage][currentStep], x, y, null);
-				g.drawImage(gun.getStepImage(), x - (this.xPosition - gun.xPosition), y - (this.yPosition - gun.yPosition), null);
 				flashThisFrame = true;
 			}
 		}
@@ -485,6 +543,27 @@ public class Player extends Sprite{
 
 	public void setHasMorphBall(boolean hasMorphBall){
 		this.hasMorphBall = hasMorphBall;
+	}
+	public void obtainMissileExpansion(){
+		hasMissiles = true;
+		missileCapacity += 5;
+		currentMissiles += 5;
+		if(currentMissiles > missileCapacity){
+			currentMissiles = missileCapacity;
+		}
+	}
+	public void obtainEnergyTank(){
+		energyCapacity += 100;
+		energy += 100;
+		if(energy > energyCapacity){
+			energy = energyCapacity;
+		}
+	}
+	public int getMissileCount(){
+		return currentMissiles;
+	}
+	public boolean hasMissiles(){
+		return hasMissiles;
 	}
 	public void setFlashing(boolean flashing){
 		this.flashing = flashing;
@@ -497,5 +576,20 @@ public class Player extends Sprite{
 	}
 	public int getEnergy(){
 		return energy;
+	}
+	public int getEnergyCapacity(){
+		return energyCapacity;
+	}
+	public void gainEnergy(int energy){
+		Sounds.playSmallPickup();
+		this.energy += energy;
+		if(this.energy > energyCapacity)
+			this.energy = energyCapacity;
+	}
+	public void gainMissiles(int missiles){
+		Sounds.playSmallPickup();
+		currentMissiles += missiles;
+		if(currentMissiles > missileCapacity)
+			currentMissiles = missileCapacity;
 	}
 }

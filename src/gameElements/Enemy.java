@@ -2,6 +2,8 @@ package gameElements;
 
 import java.util.ArrayList;
 
+import engine.Sounds;
+
 public abstract class Enemy extends Sprite{
 	protected int health;
 	protected int damage;
@@ -11,12 +13,20 @@ public abstract class Enemy extends Sprite{
 		this.damage = damage;
 	}
 	
-	public abstract void update(ArrayList<Wall> walls);
+	public abstract void update(Player player, ArrayList<Wall> walls);
+	
 	public int getHealth(){
 		return health;
 	}
-	public void hit(){
-		health--;
+	public void hit(int damage){
+		health -= damage;
+		if(health > 0){
+			Sounds.playEnemyHit();
+		}
+		else{
+			Sounds.playEnemyDie();
+			toRemove = true;
+		}
 	}
 	public int getDamage(){
 		return damage;
