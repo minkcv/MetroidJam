@@ -1,15 +1,19 @@
 package engine;
 
 import gameElements.Beam;
+import gameElements.Elevator;
 import gameElements.Enemy;
 import gameElements.EnergyDrop;
 import gameElements.EnergyTankPowerUp;
 import gameElements.Level;
 import gameElements.Missile;
+import gameElements.MissileDoor;
 import gameElements.MissileDrop;
 import gameElements.MissilePowerUp;
 import gameElements.MorphBallPowerUp;
 import gameElements.Player;
+import gameElements.Rinka;
+import gameElements.Sprite;
 import gameElements.Wall;
 
 import java.awt.Color;
@@ -29,7 +33,7 @@ public class Camera {
 		this.game = game;
 		player = game.getPlayer();
 		level = game.getCurrentLevel();
-		hud = new HUD(player);
+		hud = new HUD(player, game);
 	}
 	public void draw(Graphics g){
 		morphBall = level.getMorphBall();
@@ -86,7 +90,14 @@ public class Camera {
 		}
 		cameraBounds = new Rectangle(xShift, yShift, Main.WIDTH, Main.HEIGHT);
 		BufferedImage backGroundSection = backGround.getSubimage(xShift, yShift, Main.WIDTH, Main.HEIGHT);
+		BufferedImage foreGroundSection = level.getForeGround().getSubimage(xShift, yShift, Main.WIDTH, Main.HEIGHT);
 		g.drawImage(backGroundSection, 0, 0, null);
+		for(Sprite s : level.getAllElements()){
+			if(s.getBounds().intersects(cameraBounds))
+				s.setOnScreen(true);
+			else
+				s.setOnScreen(false);
+		}
 		if(morphBall != null)
 			morphBall.drawAt(g, morphBall.getxPosition() - xShift, morphBall.getyPosition() - yShift);
 		for(Enemy e : level.getEnemies()){
@@ -120,6 +131,14 @@ public class Camera {
 		for(MissileDrop m : level.getMissileDrops()){
 			m.drawAt(g, m.getxPosition() - xShift, m.getyPosition() - yShift);
 		}
+		for(Rinka r : level.getRinkas()){
+			r.drawAt(g, r.getxPosition() - xShift, r.getyPosition() - yShift);
+		}
+		for(MissileDoor m : level.getMissileDoors()){
+			m.drawAt(g, m.getxPosition() - xShift, m.getyPosition() - yShift);
+		}
+		level.getElevator().drawAt(g, level.getElevator().getxPosition() - xShift, level.getElevator().getyPosition() - yShift);
+		g.drawImage(foreGroundSection, 0, 0, null);
 		hud.draw(g);
 	}
 }

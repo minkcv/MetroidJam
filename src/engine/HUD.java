@@ -12,11 +12,13 @@ import gameElements.Player;
 
 public class HUD {
 	private Player player;
+	private Game game;
 	private BufferedImage emptyTank;
 	private BufferedImage fullTank;
 	private BufferedImage missileIcon;
-	public HUD(Player player){
+	public HUD(Player player, Game game){
 		this.player = player;
+		this.game = game;
 		loadGraphics();
 	}
 	
@@ -48,6 +50,9 @@ public class HUD {
 		if(player.hasMissiles()){
 			g.drawString(player.getMissileCount() + "", 68, 80);
 			g.drawImage(missileIcon, 20, 60, null);
+		}
+		if(game.timerSet()){
+			g.drawString("TIME " + game.getTimer(), 20, 110);
 		}
 	}
 }

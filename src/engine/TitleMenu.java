@@ -11,7 +11,6 @@ import javax.imageio.ImageIO;
 
 public class TitleMenu extends Interactive{
 	private Main main;
-	private BufferedImage title2Image;
 	private BufferedImage fade4;
 	private BufferedImage fade3;
 	private BufferedImage fade2;
@@ -40,7 +39,6 @@ public class TitleMenu extends Interactive{
 	public TitleMenu(Main main){
 		this.main = main;
 		try {
-			title2Image = ImageIO.read(Main.class.getResourceAsStream("/resources/title2.png"));
 			fade4 = ImageIO.read(Main.class.getResourceAsStream("/resources/fadeart/fade4.png"));
 			fade3 = ImageIO.read(Main.class.getResourceAsStream("/resources/fadeart/fade3.png"));
 			fade2 = ImageIO.read(Main.class.getResourceAsStream("/resources/fadeart/fade2.png"));

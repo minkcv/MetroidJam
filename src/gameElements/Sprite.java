@@ -24,6 +24,7 @@ public class Sprite {
 	protected int currentStep;
 	protected int currentStage;	
 	protected boolean toRemove;
+	protected boolean onScreen;
 	
 	public Sprite(int x, int y, int stepTime, // time per frame 
 								int numStages, // strips of animation
@@ -106,5 +107,14 @@ public class Sprite {
 	}
 	public boolean isToRemove(){
 		return toRemove;
-	}	
+	}
+	public boolean isOnScreen(){
+		return onScreen;
+	}
+	public void setOnScreen(boolean onScr){
+		onScreen = onScr;
+	}
+	public Rectangle getBounds(){
+		return bounding;
+	}
 }

@@ -125,6 +125,11 @@ public class Player extends Sprite{
 		knockbackX = 0;
 		knockbackY = 0;
 		
+		if(energy <= 15 && ! Sounds.playingLowEnergy())
+			Sounds.playLowEnergy();
+		else if(energy > 15)
+			Sounds.stopLowEnergy();
+		
 		if(Keyboard.SHIFT){
 			if(currentMissiles > 0 && shiftReleased){
 				missileMode = ! missileMode;
@@ -144,9 +149,6 @@ public class Player extends Sprite{
 			flashing = false;
 		}
 		
-		if(invulnerable){
-			flashing = true;
-		}
 		
 		boolean inLava = false;
 		for(Lava l : currentLevel.getLava()){
@@ -155,12 +157,16 @@ public class Player extends Sprite{
 				Sounds.playInLava();
 			}
 		}
+		if(invulnerable || inLava){
+			flashing = true;
+		}
 		if(lavaDamageStartTime + lavaDamageTime < System.currentTimeMillis()){
 			if(inLava){
 				energy--;
 				lavaDamageStartTime = System.currentTimeMillis();
 			}
 		}
+		
 		
 		for(Enemy e : currentLevel.getEnemies()){
 			if(this.bounding.intersects(e.bounding) && ! invulnerable){
@@ -591,5 +597,8 @@ public class Player extends Sprite{
 		currentMissiles += missiles;
 		if(currentMissiles > missileCapacity)
 			currentMissiles = missileCapacity;
+	}
+	public int getYVelocity(){
+		return yVelocity;
 	}
 }

@@ -18,7 +18,9 @@ public class Game extends Interactive{
 	private boolean updateObjects;
 	private Level currentLevel;
 	private int levelNumber;
-
+	private int timeRemaining;
+	private long timerTickTime;
+	private boolean timerSet;
 	private Camera camera;
 	private boolean startMusicPlayed;
 
@@ -33,9 +35,8 @@ public class Game extends Interactive{
 		player.setFlashing(true);
 		loadLevel(levelNumber);
 		camera = new Camera(this);
+		timeRemaining = 100;
 	}
-
-
 
 	public void loadLevel(int lvlNum){
 		currentLevel = new Level(this);
@@ -44,7 +45,6 @@ public class Game extends Interactive{
 		//used for getting the width and height of the sprite
 		//this particular wall is not used for any other purpose
 		Wall tempWall = new Wall(0, 0);
-		tempWall.loadGraphics();
 		try{
 			BufferedImage mapImg = ImageIO.read( getClass().getResource("/resources/levels/level" + lvlNum + ".png"));
 
@@ -66,6 +66,12 @@ public class Game extends Interactive{
 					if(c.getBlue() == 255 && c.getRed() == 0 && c.getGreen() == 2){ //blue - energy tank
 						currentLevel.addEnergyTank(new EnergyTankPowerUp(i * tempWall.getStepWidth(), j * tempWall.getStepHeight()));
 					}
+					if(c.getBlue() == 255 && c.getRed() == 0 && c.getGreen() == 3){ //blue - elevator
+						currentLevel.addElevator(new Elevator(i * tempWall.getStepWidth(), j * tempWall.getStepHeight()));
+					}
+					if(c.getBlue() == 255 && c.getRed() <= 1 && c.getGreen() == 4){ //blue - missile door, red indicates direction( 0 left, 1 right)
+						currentLevel.addMissileDoor(new MissileDoor(i * tempWall.getStepWidth(), j * tempWall.getStepHeight(), c.getRed() == 0));
+					}
 					if(c.getBlue() == 128 && c.getRed() == 255 && c.getGreen() == 128){ //salmon - lava
 						currentLevel.addLava(new Lava(i * tempWall.getStepWidth(), j * tempWall.getStepHeight()));
 					}
@@ -75,6 +81,24 @@ public class Game extends Interactive{
 					if(c.getBlue() == 1 && c.getRed() == 255 && c.getGreen() == 0){ // red - skree
 						currentLevel.addEnemy(new Skree(i * tempWall.getStepWidth(), j * tempWall.getStepHeight()));
 					}
+					if(c.getBlue() == 2 && c.getRed() == 255 && c.getGreen() == 0){ // red - rinka spawner
+						currentLevel.addRinkaSpawner(new RinkaSpawner(i * tempWall.getStepWidth(), j * tempWall.getStepHeight(), currentLevel));
+					}
+					if(c.getBlue() == 3 && c.getRed() == 255 && c.getGreen() == 0){ // red - mother brain
+						currentLevel.addMotherBrain(new MotherBrain(i * tempWall.getStepWidth(), j * tempWall.getStepHeight(), this));
+					}
+					if(c.getBlue() == 4 && c.getRed() == 255 && c.getGreen() == 0){ // red - mother brain walls
+						currentLevel.addMBWall(new Wall(i * tempWall.getStepWidth(), j * tempWall.getStepHeight()));
+					}
+					if(c.getBlue() == 5 && c.getRed() == 255 && c.getGreen() == 0){ // red - mother brain glass
+						currentLevel.addMBGlass(new MBGlass(i * tempWall.getStepWidth(), j * tempWall.getStepHeight()));
+					}
+					if(c.getBlue() == 6 && c.getRed() == 255 && c.getGreen() == 0){ // red - mother brain glass
+						currentLevel.addEnemy(new Spikes(i * tempWall.getStepWidth(), j * tempWall.getStepHeight()));
+					}
+					if(c.getBlue() == 128 && c.getRed() == 128 && c.getGreen() == 128){ // gray - music changer
+						currentLevel.addMusicChanger(new MusicChanger(i * tempWall.getStepWidth(), j * tempWall.getStepHeight()));
+					}
 				}
 			}
 		}catch(IOException e){
@@ -82,7 +106,7 @@ public class Game extends Interactive{
 		}
 
 		for(Wall w : currentLevel.getWalls()){
-			w.loadGraphics();
+//			w.loadGraphics();
 		}
 		currentLevel.loadBackGround(levelNumber);
 		tempWall = null;
@@ -102,6 +126,7 @@ public class Game extends Interactive{
 		if(Sounds.startFinished()){
 			updateObjects = true;
 			player.setFlashing(false);
+			Sounds.playGameMusic1();
 		}
 		
 		if(updateObjects){
@@ -110,7 +135,20 @@ public class Game extends Interactive{
 		}
 		
 		if(player.getEnergy() < 1){
+			Sounds.pauseGameMusic1();
+			Sounds.pauseGameMusic2();
+			Sounds.stopEscapeSequence();
+			Sounds.playGameOver();
+			Sounds.stopFootSteps();
+			Sounds.stopLowEnergy();
 			main.gameOver();
+		}
+		
+		if(timerSet){
+			if(timerTickTime + 1000 < System.currentTimeMillis()){
+				timerTickTime = System.currentTimeMillis();
+				timeRemaining--;
+			}
 		}
 	}
 
@@ -120,6 +158,7 @@ public class Game extends Interactive{
 	}
 	
 	public void collectItem(Sprite item){
+		Sounds.pauseGameMusic();
 		Sounds.playObtainPowerUp();
 		try{
 			Thread.sleep(3000);
@@ -134,6 +173,7 @@ public class Game extends Interactive{
 		else if(item.getClass() == EnergyTankPowerUp.class){
 			player.obtainEnergyTank();
 		}
+		Sounds.resumeGameMusic();
 	}
 	
 	public Player getPlayer(){
@@ -141,5 +181,23 @@ public class Game extends Interactive{
 	}
 	public Level getCurrentLevel(){
 		return currentLevel;
+	}
+	public void startTimer(){
+		timerSet = true;
+	}
+	public int getTimer(){
+		return timeRemaining;
+	}
+	public boolean timerSet(){
+		return timerSet;
+	}
+	public void winGame(){
+		Sounds.playEndMusic();
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		main.showCredits();
 	}
 }
