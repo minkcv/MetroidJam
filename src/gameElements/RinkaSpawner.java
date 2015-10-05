@@ -12,7 +12,7 @@ public class RinkaSpawner extends Wall{
 	}
 	
 	public void update(){
-		if(rinka == null){
+		if(rinka == null && onScreen){
 			if(wait){
 				rinkaWaitStartTime = System.currentTimeMillis();
 				wait = false;
@@ -23,7 +23,7 @@ public class RinkaSpawner extends Wall{
 				wait = true;
 			}
 		}
-		else{
+		else if(rinka != null){
 			if(!rinka.isOnScreen() || rinka.toRemove)
 				destroyRinka();
 		}

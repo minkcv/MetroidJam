@@ -78,11 +78,9 @@ public class Main {
 		game = new Game(this);
 		gState = GameState.GAME;
 	}
-	
 	public void pauseGame(){
 		gState = GameState.PAUSE_MENU;
 	}
-	
 	public void unPauseGame(){
 		gState = GameState.GAME;
 	}

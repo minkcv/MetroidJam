@@ -174,8 +174,7 @@ public class Level {
 			}
 		}
 		for(RinkaSpawner r : rinkaSpawners){
-			if(r.isOnScreen())
-				r.update();
+			r.update();
 		}
 		for(Enemy e : enemies){
 			if(e.isOnScreen()){
