@@ -142,7 +142,7 @@ public class Level {
 				}
 			}
 		}
-		
+
 		for(MissileDoor m : missileDoors){
 			if(m.isToRemove()){
 				removeMissileDoor(m);
@@ -218,13 +218,25 @@ public class Level {
 
 		for(MusicChanger m : musicChangers){
 			if(m.bounding.intersects(game.getPlayer().bounding)){
-				if(game.getPlayer().getYVelocity() > 0){
-					Sounds.pauseGameMusic1();
-					Sounds.playGameMusic2();
+				if(m.getMusic() == 0){
+					if(game.getPlayer().getYVelocity() > 0){
+						Sounds.pauseGameMusic1();
+						Sounds.playGameMusic2();
+					}
+					else if(game.getPlayer().getYVelocity() < 0){
+						Sounds.pauseGameMusic2();
+						Sounds.playGameMusic1();
+					}
 				}
-				else if(game.getPlayer().getYVelocity() < 0){
-					Sounds.pauseGameMusic2();
-					Sounds.playGameMusic1();
+				else if(m.getMusic() == 1){
+					if(game.getPlayer().getYVelocity() > 0){
+						Sounds.pauseGameMusic1();
+						Sounds.playGameMusic3();
+					}
+					else if(game.getPlayer().getYVelocity() < 0){
+						Sounds.pauseGameMusic3();
+						Sounds.playGameMusic1();
+					}
 				}
 			}
 		}

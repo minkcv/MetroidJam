@@ -96,8 +96,8 @@ public class Game extends Interactive{
 					if(c.getBlue() == 6 && c.getRed() == 255 && c.getGreen() == 0){ // red - mother brain glass
 						currentLevel.addEnemy(new Spikes(i * tempWall.getStepWidth(), j * tempWall.getStepHeight()));
 					}
-					if(c.getBlue() == 128 && c.getRed() == 128 && c.getGreen() == 128){ // gray - music changer
-						currentLevel.addMusicChanger(new MusicChanger(i * tempWall.getStepWidth(), j * tempWall.getStepHeight()));
+					if(c.getBlue() < 2 && c.getRed() == 128 && c.getGreen() == 128){ // dark yellow - music changer
+						currentLevel.addMusicChanger(new MusicChanger(i * tempWall.getStepWidth(), j * tempWall.getStepHeight(), c.getBlue()));
 					}
 				}
 			}

@@ -26,6 +26,9 @@ public class Sounds {
 	private static Audio gameMusic2;
 	private static float gameMusic2Position;
 	private static boolean gameMusic2Paused;
+	private static Audio gameMusic3;
+	private static float gameMusic3Position;
+	private static boolean gameMusic3Paused;
 	private static Audio gameOverMusic;
 	private static Audio endMusic;
 	private static Audio mbrainDie;
@@ -50,6 +53,7 @@ public class Sounds {
 			smallPickup = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("resources/sounds/hp-pickup.wav"));
 			gameMusic1 = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("resources/sounds/met-ingame.wav"));
 			gameMusic2 = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("resources/sounds/met-lair.wav"));
+			gameMusic3 = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("resources/sounds/brain-area.wav"));
 			endMusic = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("resources/sounds/metroid-ending.wav"));
 			mbrainDie = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("resources/sounds/mbrain-die.wav"));
 			escapeSequence = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("resources/sounds/metroid-escapeSeq.wav"));
@@ -130,6 +134,16 @@ public class Sounds {
 		gameMusic2Paused = true;
 		gameMusic2.stop();
 	}
+	public static void playGameMusic3(){
+		gameMusic3.playAsMusic(1.0f, 1.0f, true);
+		if(gameMusic3Paused)
+			gameMusic3.setPosition(gameMusic3Position);
+	}
+	public static void pauseGameMusic3(){
+		gameMusic1Position = gameMusic1.getPosition();
+		gameMusic1Paused = true;
+		gameMusic1.stop();
+	}
 	public static void playEndMusic(){
 		endMusic.playAsMusic(1.0f, 1.0f, true);
 	}
@@ -159,6 +173,10 @@ public class Sounds {
 		else if(gameMusic2.isPlaying()){
 			pauseGameMusic2();
 			lastMusic = gameMusic2;
+		}
+		else if(gameMusic3.isPlaying()){
+			pauseGameMusic3();
+			lastMusic = gameMusic3;
 		}
 	}
 	public static void playGameOver(){
