@@ -1,8 +1,8 @@
 # MetroidJam Game
 
-A submission for the #metroidjam by [@minkcv](twitter.com/minkcv) and [@beatscribe](twitter.com/beatscribe)
+[Download the game here](http://gamejolt.com/games/mtrd/94843)
 
-Follow the game to get notifications about updates and fixes. (I won't spam you)
+A submission for the #metroidjam by [@minkcv](twitter.com/minkcv) and [@beatscribe](twitter.com/beatscribe)
 
 *Controls*
 Arrows: Move and aim
